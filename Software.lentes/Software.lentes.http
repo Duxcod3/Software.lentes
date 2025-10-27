@@ -1,0 +1,6 @@
+@Software.lentes_HostAddress = http://localhost:5112
+
+GET {{Software.lentes_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

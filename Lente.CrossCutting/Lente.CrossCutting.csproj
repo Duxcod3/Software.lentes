@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lente.Application\Lente.Application.csproj" />
+    <ProjectReference Include="..\Lente.Domain\Lente.Domain.csproj" />
+    <ProjectReference Include="..\Lente.Infraestruture\Lente.Infraestruture.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Hash\" />
+    <Folder Include="Jwt\" />
+  </ItemGroup>
+
+</Project>
