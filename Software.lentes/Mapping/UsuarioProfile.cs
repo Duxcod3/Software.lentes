@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Lente.Domain.Entities;
+using Lente.DTOs;
 using Software.lentes.DTOs;
 
 namespace Software.lentes.Mapping

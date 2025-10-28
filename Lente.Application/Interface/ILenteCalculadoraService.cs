@@ -1,4 +1,5 @@
-﻿using Software.lentes.DTOs;
+﻿using Lente.DTOs;
+using Software.lentes.DTOs;
 using System.Threading.Tasks;
 
 namespace Lente.Application.Service

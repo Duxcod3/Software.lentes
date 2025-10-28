@@ -7,14 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lente.Application\Lente.Application.csproj" />
-    <ProjectReference Include="..\Lente.Domain\Lente.Domain.csproj" />
-    <ProjectReference Include="..\Lente.Infraestruture\Lente.Infraestruture.csproj" />
+    <Folder Include="Hash\" />
+    <Folder Include="Jwt\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Hash\" />
-    <Folder Include="Jwt\" />
+    <ProjectReference Include="..\Lente.Domain\Lente.Domain.csproj" />
+    <ProjectReference Include="..\Lente.Infraestruture\Lente.Infraestruture.csproj" />
   </ItemGroup>
 
 </Project>

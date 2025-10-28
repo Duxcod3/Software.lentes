@@ -42,7 +42,7 @@ builder.Services.AddScoped<ILenteRepository, LenteRepository>();  // Adicionado 
 builder.Services.AddScoped<ILenteService, LenteService>();  // Adicionado serviço para Lente
 builder.Services.AddAutoMapper(typeof(UsuarioProfile), typeof(LenteProfile));  // Registrando os profiles de AutoMapper
 builder.Services.AddScoped<ILenteCalculadoraService, LenteCalculadoraService>();
-builder.Services.AddScoped<ILenteCalculadoraService, LenteCalculadoraService>();
+
 
 
 
@@ -119,11 +119,11 @@ using (var scope = app.Services.CreateScope())
 // ---------------------
 // Pipeline HTTP
 // ---------------------
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 

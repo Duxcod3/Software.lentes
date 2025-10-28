@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Lente.Application.Interfaces;
 using Lente.Domain.Entities;
+using Lente.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Software.lentes.DTOs;
 
@@ -23,29 +23,32 @@ namespace Software.lentes.Controllers
         [HttpPost]
         public async Task<IActionResult> CriarLente(LenteDTO lenteDTO)
         {
-            // Verificação de valores positivos antes de chamar o serviço
-            if (lenteDTO.Horizontal <= 0 || lenteDTO.Vertical <= 0 || lenteDTO.DiagonalMaior <= 0)
+            // Validações básicas
+            if (lenteDTO.Horizontal <= 0 || lenteDTO.Vertical <= 0 || lenteDTO.DiagonalMaior <= 0 || lenteDTO.Ponte < 0)
             {
-                return BadRequest(new { Message = "Os valores de horizontal, vertical e diagonal precisam ser positivos." });
+                return BadRequest(new { Message = "Os valores de horizontal, vertical, diagonal e ponte devem ser positivos." });
+            }
+
+            if (string.IsNullOrWhiteSpace(lenteDTO.Lado))
+            {
+                return BadRequest(new { Message = "O lado da lente (Esquerda/Direita) é obrigatório." });
             }
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);  // Retorna erros de validação do modelo
+                return BadRequest(ModelState);
             }
 
             try
             {
                 var lente = _mapper.Map<LenteModelo>(lenteDTO);
 
-                // Garantir que o UsuarioId seja atribuído corretamente
-                if (lenteDTO.UsuarioId != 0)  // Caso o UsuarioId não seja 0, associar corretamente
+                if (lenteDTO.UsuarioId != 0)
                 {
                     lente.UsuarioId = lenteDTO.UsuarioId;
                 }
                 else
                 {
-                    // Retornar erro se o UsuarioId for obrigatório
                     return BadRequest(new { Message = "O UsuarioId é obrigatório." });
                 }
 
@@ -62,17 +65,17 @@ namespace Software.lentes.Controllers
 
         // Atualizar Lente
         [HttpPut("{id}")]
-        public async Task<IActionResult> AtualizarLente(int id, LenteAtualizarDTO lenteAtualizarDTO)
+        public async Task<IActionResult> AtualizarLente(int id, LenteDTO lenteDTO)
         {
-            // Verificação de valores positivos antes de chamar o serviço
-            if (lenteAtualizarDTO.Horizontal <= 0 || lenteAtualizarDTO.Vertical <= 0 || lenteAtualizarDTO.DiagonalMaior <= 0)
+            // Validações básicas
+            if (lenteDTO.Horizontal <= 0 || lenteDTO.Vertical <= 0 || lenteDTO.DiagonalMaior <= 0 || lenteDTO.Ponte < 0)
             {
-                return BadRequest(new { Message = "Os valores de horizontal, vertical e diagonal precisam ser positivos." });
+                return BadRequest(new { Message = "Os valores de horizontal, vertical, diagonal e ponte devem ser positivos." });
             }
 
-            if (!ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(lenteDTO.Lado))
             {
-                return BadRequest(ModelState);  // Retorna erros de validação do modelo
+                return BadRequest(new { Message = "O lado da lente (Esquerda/Direita) é obrigatório." });
             }
 
             var lenteExistente = await _lenteService.ObterLentePorIdAsync(id);
@@ -83,10 +86,9 @@ namespace Software.lentes.Controllers
 
             try
             {
-                var lenteAtualizada = _mapper.Map<LenteModelo>(lenteAtualizarDTO);
-                lenteAtualizada.Id = id;  // Garantir que o ID seja mantido
+                var lenteAtualizada = _mapper.Map<LenteModelo>(lenteDTO);
+                lenteAtualizada.Id = id;
 
-                // Se o UsuarioId não for passado, mantemos o valor atual
                 if (lenteAtualizada.UsuarioId == 0)
                 {
                     lenteAtualizada.UsuarioId = lenteExistente.UsuarioId;
@@ -114,7 +116,7 @@ namespace Software.lentes.Controllers
             try
             {
                 await _lenteService.ExcluirLenteAsync(id);
-                return NoContent(); // Retorna 204 No Content após excluir a lente
+                return NoContent();
             }
             catch (Exception ex)
             {

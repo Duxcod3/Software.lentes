@@ -29,7 +29,9 @@
     <ProjectReference Include="..\Lente.Domain\Lente.Domain.csproj" />
     <ProjectReference Include="..\Lente.Infraestruture\Lente.Infraestruture.csproj" />
     <ProjectReference Include="..\Lente.Tests\Lente.Tests.csproj" />
-  </ItemGroup>
+	<ProjectReference Include="..\Lente.Application\Lente.Application.csproj" />
+	<ProjectReference Include="..\UsuarioDTO\Lente.DTOs.csproj" />
+ </ItemGroup>
 
   <ItemGroup>
     <Folder Include="AutoMapper\" />

@@ -1,4 +1,5 @@
 ﻿using Lente.Application.Interface;
+using Lente.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Software.lentes.DTOs;

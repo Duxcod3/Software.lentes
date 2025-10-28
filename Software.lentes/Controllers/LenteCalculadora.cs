@@ -1,4 +1,5 @@
 ﻿
+using Lente.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Software.lentes.DTOs;
 
@@ -31,7 +32,7 @@ namespace Lente.Application.Service
 
                 // Retorna o conteúdo como um arquivo de texto (TRCFMT)
                 var fileBytes = System.Text.Encoding.UTF8.GetBytes(conteudoArquivo);
-                return File(fileBytes, "application/octet-stream", "lente.trcfmt");
+                return File(fileBytes, "application/octet-stream", "lente.vca");
             }
             catch (ArgumentException ex)
             {

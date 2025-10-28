@@ -20,7 +20,7 @@ namespace Lente.Infraestruture.Data
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            var connectionString = configuration.GetConnectionString("mlensusuario");
+            var connectionString = configuration.GetConnectionString("MLENS");
 
             Console.WriteLine("Connection string usada no factory: " + (connectionString ?? "NULL"));
 
