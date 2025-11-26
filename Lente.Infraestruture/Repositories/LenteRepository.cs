@@ -22,7 +22,7 @@ namespace Lente.Infraestruture.Repositories
         public async Task<LenteModelo?> GetByDimensionsAsync(double horizontal, double vertical, double diagonal)
         {
             return await _dbSet
-                .FirstOrDefaultAsync(l => l.Horizontal == horizontal && l.Vertical == vertical && l.Diagonal == diagonal);
+                .FirstOrDefaultAsync(l => l.Horizontal == horizontal && l.Vertical == vertical && l.DiagonalMaior == diagonal);
         }
     }
 }

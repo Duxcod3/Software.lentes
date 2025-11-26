@@ -31,7 +31,7 @@ namespace Lente.Infraestruture.Data
                    .IsRequired()
                    .HasColumnType("decimal(18, 2)");
 
-            builder.Property(l => l.Diagonal)
+            builder.Property(l => l.DiagonalMaior)
                    .IsRequired()
                    .HasColumnType("decimal(18, 2)");
 

@@ -17,7 +17,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Configuração do banco
 // ---------------------
 builder.Services.AddDbContext<UsuarioContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MLENS")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("MLENS"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,                     // Tenta até 5 vezes em caso de falha
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Intervalo de até 10s entre tentativas
+            errorNumbersToAdd: null               // Usa erros padrão de falhas transitórias
+        )
+    )
+);
 
 // ---------------------
 // CORS
@@ -39,12 +47,9 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IJwtService, JwtServiceAdapter>();
 builder.Services.AddScoped<ILenteRepository, LenteRepository>();  // Adicionado repositório para Lente
-builder.Services.AddScoped<ILenteService, LenteService>();  // Adicionado serviço para Lente
+builder.Services.AddScoped<ILenteService, LenteService>();        // Adicionado serviço para Lente
 builder.Services.AddAutoMapper(typeof(UsuarioProfile), typeof(LenteProfile));  // Registrando os profiles de AutoMapper
 builder.Services.AddScoped<ILenteCalculadoraService, LenteCalculadoraService>();
-
-
-
 
 // ---------------------
 // Controllers
@@ -119,11 +124,8 @@ using (var scope = app.Services.CreateScope())
 // ---------------------
 // Pipeline HTTP
 // ---------------------
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-//}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

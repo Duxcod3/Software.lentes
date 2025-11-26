@@ -1,6 +1,7 @@
 ﻿using Lente.Application.Exceptions;
 using Lente.Domain.Entities;
 using Lente.Domain.Interfaces;
+using Lente.DTOs;
 using Microsoft.Extensions.Logging;
 using Software.lentes.DTOs;
 
@@ -20,6 +21,7 @@ namespace Lente.Application.Service
             _logger = logger;
         }
 
+
         // Criar lente
         public async Task<LenteModelo> CriarLenteAsync(LenteModelo lente)
         {
@@ -29,21 +31,18 @@ namespace Lente.Application.Service
                 throw new ArgumentNullException(nameof(lente), "A lente não pode ser nula.");
             }
 
-            // Validação dos dados da lente (horizontal, vertical e diagonal devem ser positivos)
-            if (lente.Horizontal <= 0 || lente.Vertical <= 0 || lente.Diagonal <= 0)
+            if (lente.Horizontal <= 0 || lente.Vertical <= 0 || lente.DiagonalMaior <= 0)
             {
-                _logger.LogWarning("Tentativa de criar lente com valores inválidos: Horizontal={Horizontal}, Vertical={Vertical}, Diagonal={Diagonal}.", lente.Horizontal, lente.Vertical, lente.Diagonal);
+                _logger.LogWarning("Tentativa de criar lente com valores inválidos: Horizontal={Horizontal}, Vertical={Vertical}, Diagonal={Diagonal}.", lente.Horizontal, lente.Vertical, lente.DiagonalMaior);
                 throw new ArgumentException("Os valores de horizontal, vertical e diagonal precisam ser positivos.");
             }
 
-            // Verificando se o UsuarioId é válido
             if (lente.UsuarioId == 0)
             {
                 _logger.LogWarning("UsuarioId não informado ou é inválido.");
                 throw new ArgumentException("O UsuarioId é obrigatório.");
             }
 
-            // Buscar o usuário associado ao UsuarioId
             var usuario = await _usuarioRepository.GetByIdAsync(lente.UsuarioId);
             if (usuario == null)
             {
@@ -51,14 +50,18 @@ namespace Lente.Application.Service
                 throw new Exception("Usuário não encontrado.");
             }
 
-            lente.Usuario = usuario; // Associando o usuário à lente
+            lente.Usuario = usuario;
 
-            // Adiciona a lente no repositório
-            await _lenteRepository.AddAsync(lente);
-            _logger.LogInformation("Lente criada com sucesso: ID {Id}, Horizontal {Horizontal}, Vertical {Vertical}, Diagonal {Diagonal}.", lente.Id, lente.Horizontal, lente.Vertical, lente.Diagonal);
-            return lente;
+            //  Adiciona a data de criação
+            lente.CreatedAt = DateTime.UtcNow;
+
+            //  Adiciona e retorna o objeto criado (com ID)
+            var created = await _lenteRepository.AddAsync(lente);
+
+            _logger.LogInformation("Lente criada com sucesso: ID {Id}, Horizontal {Horizontal}, Vertical {Vertical}, Diagonal {Diagonal}.", created.Id, created.Horizontal, created.Vertical, created.DiagonalMaior);
+
+            return created;
         }
-
         // Atualizar lente
         public async Task AtualizarLenteAsync(LenteModelo lenteAtualizada)
         {
@@ -76,9 +79,9 @@ namespace Lente.Application.Service
             }
 
             // Validação dos dados da lente (horizontal, vertical e diagonal devem ser positivos)
-            if (lenteAtualizada.Horizontal <= 0 || lenteAtualizada.Vertical <= 0 || lenteAtualizada.Diagonal <= 0)
+            if (lenteAtualizada.Horizontal <= 0 || lenteAtualizada.Vertical <= 0 || lenteAtualizada.DiagonalMaior <= 0)
             {
-                _logger.LogWarning("Tentativa de atualizar lente com valores inválidos: Horizontal={Horizontal}, Vertical={Vertical}, Diagonal={Diagonal}.", lenteAtualizada.Horizontal, lenteAtualizada.Vertical, lenteAtualizada.Diagonal);
+                _logger.LogWarning("Tentativa de atualizar lente com valores inválidos: Horizontal={Horizontal}, Vertical={Vertical}, Diagonal={Diagonal}.", lenteAtualizada.Horizontal, lenteAtualizada.Vertical, lenteAtualizada.DiagonalMaior);
                 throw new ArgumentException("Os valores de horizontal, vertical e diagonal precisam ser positivos.");
             }
 
@@ -102,10 +105,10 @@ namespace Lente.Application.Service
             // Atualiza os dados da lente
             lenteExistente.Horizontal = lenteAtualizada.Horizontal;
             lenteExistente.Vertical = lenteAtualizada.Vertical;
-            lenteExistente.Diagonal = lenteAtualizada.Diagonal;
+            lenteExistente.DiagonalMaior = lenteAtualizada.DiagonalMaior;
 
             await _lenteRepository.UpdateAsync(lenteExistente);
-            _logger.LogInformation("Lente com ID {Id} atualizada com sucesso: Horizontal {Horizontal}, Vertical {Vertical}, Diagonal {Diagonal}.", lenteExistente.Id, lenteExistente.Horizontal, lenteExistente.Vertical, lenteExistente.Diagonal);
+            _logger.LogInformation("Lente com ID {Id} atualizada com sucesso: Horizontal {Horizontal}, Vertical {Vertical}, Diagonal {Diagonal}.", lenteExistente.Id, lenteExistente.Horizontal, lenteExistente.Vertical, lenteExistente.DiagonalMaior);
         }
 
         // Obter lente por ID
@@ -151,7 +154,7 @@ namespace Lente.Application.Service
 
             // Lógica para gerar os valores de raio com base nos dados
             // Vamos apenas criar um formato fictício de exemplo.
-            var formatoRaio = $"TRCFMT=1;360;E;R;F\nR={lente.Horizontal};{lente.Vertical};{lente.Diagonal}";
+            var formatoRaio = $"TRCFMT=1;360;E;R;F\nR={lente.Horizontal};{lente.Vertical};{lente.DiagonalMaior}";
 
             return formatoRaio;
         }

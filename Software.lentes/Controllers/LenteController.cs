@@ -3,6 +3,8 @@ using Lente.Domain.Entities;
 using Lente.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Software.lentes.DTOs;
+using System;
+using System.Threading.Tasks;
 
 namespace Software.lentes.Controllers
 {
@@ -19,43 +21,50 @@ namespace Software.lentes.Controllers
             _mapper = mapper;
         }
 
-        // Criar Lente
-        [HttpPost]
-        public async Task<IActionResult> CriarLente(LenteDTO lenteDTO)
+        // GET: api/lente
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            // Validações básicas
-            if (lenteDTO.Horizontal <= 0 || lenteDTO.Vertical <= 0 || lenteDTO.DiagonalMaior <= 0 || lenteDTO.Ponte < 0)
-            {
-                return BadRequest(new { Message = "Os valores de horizontal, vertical, diagonal e ponte devem ser positivos." });
-            }
+            var lentes = await _lenteService.ListarLentesAsync();
+            return Ok(lentes);
+        }
+
+        // GET: api/lente/{id}
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<LenteDTO>> ObterLente(int id)
+        {
+            var lente = await _lenteService.ObterLentePorIdAsync(id);
+            if (lente == null)
+                return NotFound(new { Message = "Lente não encontrada." });
+
+            var lenteDTO = _mapper.Map<LenteDTO>(lente);
+            return Ok(lenteDTO);
+        }
+
+        // POST: api/lente
+        [HttpPost]
+        public async Task<IActionResult> CriarLente([FromBody] LenteDTO lenteDTO)
+        {
+            if (lenteDTO.Horizontal <= 0 || lenteDTO.Vertical <= 0 || !lenteDTO.DiagonalMaior.HasValue || lenteDTO.DiagonalMaior <= 0 || lenteDTO.Ponte < 0)
+                return BadRequest(new { Message = "Os valores de horizontal, vertical, diagonal e ponte devem ser positivos e obrigatórios." });
 
             if (string.IsNullOrWhiteSpace(lenteDTO.Lado))
-            {
                 return BadRequest(new { Message = "O lado da lente (Esquerda/Direita) é obrigatório." });
-            }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (lenteDTO.UsuarioId == 0)
+                return BadRequest(new { Message = "O UsuarioId é obrigatório." });
 
             try
             {
                 var lente = _mapper.Map<LenteModelo>(lenteDTO);
 
-                if (lenteDTO.UsuarioId != 0)
-                {
-                    lente.UsuarioId = lenteDTO.UsuarioId;
-                }
-                else
-                {
-                    return BadRequest(new { Message = "O UsuarioId é obrigatório." });
-                }
+                // Garante que a data de criação seja registrada
+                lente.CreatedAt = DateTime.UtcNow;
 
                 var createdLente = await _lenteService.CriarLenteAsync(lente);
-                var createdLenteDTO = _mapper.Map<LenteDTO>(createdLente);
 
-                return CreatedAtAction(nameof(ObterLente), new { id = createdLenteDTO.Id }, createdLenteDTO);
+                // Retorna o objeto completo da lente criada
+                return Ok(createdLente);
             }
             catch (Exception ex)
             {
@@ -63,26 +72,19 @@ namespace Software.lentes.Controllers
             }
         }
 
-        // Atualizar Lente
-        [HttpPut("{id}")]
-        public async Task<IActionResult> AtualizarLente(int id, LenteDTO lenteDTO)
+        // PUT: api/lente/{id}
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> AtualizarLente(int id, [FromBody] LenteDTO lenteDTO)
         {
-            // Validações básicas
-            if (lenteDTO.Horizontal <= 0 || lenteDTO.Vertical <= 0 || lenteDTO.DiagonalMaior <= 0 || lenteDTO.Ponte < 0)
-            {
-                return BadRequest(new { Message = "Os valores de horizontal, vertical, diagonal e ponte devem ser positivos." });
-            }
+            if (lenteDTO.Horizontal <= 0 || lenteDTO.Vertical <= 0 || !lenteDTO.DiagonalMaior.HasValue || lenteDTO.DiagonalMaior <= 0 || lenteDTO.Ponte < 0)
+                return BadRequest(new { Message = "Os valores de horizontal, vertical, diagonal e ponte devem ser positivos e obrigatórios." });
 
             if (string.IsNullOrWhiteSpace(lenteDTO.Lado))
-            {
                 return BadRequest(new { Message = "O lado da lente (Esquerda/Direita) é obrigatório." });
-            }
 
             var lenteExistente = await _lenteService.ObterLentePorIdAsync(id);
             if (lenteExistente == null)
-            {
                 return NotFound(new { Message = "Lente não encontrada." });
-            }
 
             try
             {
@@ -90,9 +92,7 @@ namespace Software.lentes.Controllers
                 lenteAtualizada.Id = id;
 
                 if (lenteAtualizada.UsuarioId == 0)
-                {
                     lenteAtualizada.UsuarioId = lenteExistente.UsuarioId;
-                }
 
                 await _lenteService.AtualizarLenteAsync(lenteAtualizada);
                 return NoContent();
@@ -103,15 +103,13 @@ namespace Software.lentes.Controllers
             }
         }
 
-        // Excluir Lente
-        [HttpDelete("{id}")]
+        // DELETE: api/lente/{id}
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> ExcluirLente(int id)
         {
             var lenteExistente = await _lenteService.ObterLentePorIdAsync(id);
             if (lenteExistente == null)
-            {
                 return NotFound(new { Message = "Lente não encontrada." });
-            }
 
             try
             {
@@ -122,20 +120,6 @@ namespace Software.lentes.Controllers
             {
                 return StatusCode(500, new { Message = "Erro interno ao excluir a lente.", Details = ex.Message });
             }
-        }
-
-        // Obter Lente por ID
-        [HttpGet("{id}")]
-        public async Task<ActionResult<LenteDTO>> ObterLente(int id)
-        {
-            var lente = await _lenteService.ObterLentePorIdAsync(id);
-            if (lente == null)
-            {
-                return NotFound(new { Message = "Lente não encontrada." });
-            }
-
-            var lenteDTO = _mapper.Map<LenteDTO>(lente);
-            return Ok(lenteDTO);
         }
     }
 }

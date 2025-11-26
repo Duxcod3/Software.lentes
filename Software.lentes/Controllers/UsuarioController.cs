@@ -56,6 +56,7 @@ namespace Software.lentes.Controllers
                 Email = usuarioDto.Email,
                 Senha = usuarioDto.Senha,
                 Perfil = usuarioDto.Perfil
+           
             };
 
             var novoUsuario = await _usuarioService.CriarUsuarioAsync(usuario, usuarioDto.Senha);
@@ -66,7 +67,8 @@ namespace Software.lentes.Controllers
                 NomeDeUsuario = novoUsuario.NomeDeUsuario,
                 Email = novoUsuario.Email,
                 Senha = usuarioDto.Senha,
-                Perfil = usuarioDto.Perfil
+                Perfil = usuarioDto.Perfil,
+                Nome = usuarioDto.Nome
             };
             return CreatedAtAction(nameof(Get), new { id = usuarioRetorno.Id }, usuarioRetorno);
         }
@@ -79,28 +81,27 @@ namespace Software.lentes.Controllers
 
             try
             {
-                var usuario = _mapper.Map<Usuario>(usuarioDto);
-                await _usuarioService.AtualizarUsuarioAsync(usuario);
+                var usuarioExistente = await _usuarioService.ObterUsuarioPorIdAsync(id);
+                if (usuarioExistente == null)
+                    return NotFound();
+
+                // Atualiza apenas campos que não são nulos
+                if (!string.IsNullOrWhiteSpace(usuarioDto.NomeDeUsuario)) usuarioExistente.NomeDeUsuario = usuarioDto.NomeDeUsuario;
+                if (!string.IsNullOrWhiteSpace(usuarioDto.Email)) usuarioExistente.Email = usuarioDto.Email;
+                if (!string.IsNullOrWhiteSpace(usuarioDto.Perfil)) usuarioExistente.Perfil = usuarioDto.Perfil;
+
+                await _usuarioService.AtualizarUsuarioAsync(usuarioExistente);
 
                 if (!string.IsNullOrWhiteSpace(usuarioDto.Senha))
                 {
-                    await _usuarioService.AtualizarSenhaAsync(usuarioDto.Id, usuarioDto.Senha);
+                    await _usuarioService.AtualizarSenhaAsync(id, usuarioDto.Senha);
                 }
 
                 return NoContent();
             }
-            catch (UsuarioNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
             catch (Exception ex)
             {
-                // Logar erro se quiser
-                return StatusCode(500, "Erro interno no servidor.");
+                return StatusCode(500, "Erro interno no servidor: " + ex.Message);
             }
         }
 

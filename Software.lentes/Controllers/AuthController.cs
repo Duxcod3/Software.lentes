@@ -39,7 +39,18 @@ namespace Software.lentes.Controllers
 
             var token = _jwtService.GerarToken(usuario);
 
-            return Ok(new { token });
+            return Ok(new 
+            {
+                token,
+                usuario = new
+                {
+                    usuario.Id,
+                    usuario.NomeDeUsuario,
+                    usuario.Email,
+                    usuario.Perfil
+                
+                }
+            });
         }
     }
 }
