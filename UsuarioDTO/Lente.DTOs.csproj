@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<ItemGroup>
+		<Compile Include="UsuarioDTO.cs" />
+		<Compile Include="LenteAtualziarDTO.cs" />
+		<Compile Include="LenteDTO.cs" />
+		<Compile Include="LoginDTO.cs" />
+		<Compile Include="UsuarioAtualizarDTO.cs" />
+	</ItemGroup>
+
 </Project>
+
+
