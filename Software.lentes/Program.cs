@@ -17,12 +17,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Configuração do banco
 // ---------------------
 builder.Services.AddDbContext<UsuarioContext>(options =>
-    options.UseSqlServer(
+    options.UseNpgsql(
         builder.Configuration.GetConnectionString("MLENS"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure(
+        npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,                     // Tenta até 5 vezes em caso de falha
             maxRetryDelay: TimeSpan.FromSeconds(10), // Intervalo de até 10s entre tentativas
-            errorNumbersToAdd: null               // Usa erros padrão de falhas transitórias
+            errorCodesToAdd: null                  // Sem códigos adicionais de erro
         )
     )
 );

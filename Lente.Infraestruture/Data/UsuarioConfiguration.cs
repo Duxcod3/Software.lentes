@@ -16,24 +16,24 @@ namespace Lente.Infraestruture.Data
 
             builder.Property(u => u.NomeDeUsuario)
                    .IsRequired()
-                   .HasMaxLength(50)
-                   .HasColumnType("nvarchar(50)");
+                   .HasMaxLength(50);
+
 
             builder.Property(u => u.Senha)
                    .IsRequired()
-                   .HasMaxLength(100)
-                   .HasColumnType("nvarchar(100)");
+                   .HasMaxLength(100);
+
 
 
             builder.Property(u => u.Email)
                    .IsRequired()
-                   .HasMaxLength(100)
-                   .HasColumnType("nvarchar(100)");
+                   .HasMaxLength(100);
+
 
             builder.Property(u => u.Perfil)
                    .IsRequired()
-                   .HasMaxLength(20)
-                   .HasColumnType("nvarchar(20)");
+                   .HasMaxLength(20);
+                  
 
         }
     }

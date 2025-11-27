@@ -28,7 +28,7 @@ namespace Lente.Infraestruture.Data
                 throw new InvalidOperationException("A string de conexão não foi encontrada no appsettings.json.");
 
             var optionsBuilder = new DbContextOptionsBuilder<UsuarioContext>();
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseNpgsql(connectionString);
 
             return new UsuarioContext(optionsBuilder.Options);
         }
