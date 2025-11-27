@@ -18,7 +18,7 @@ COPY ["Lente.Domain/Lente.Domain.csproj", "Lente.Domain/"]
 COPY ["Lente.Infraestruture/Lente.Infraestruture.csproj", "Lente.Infraestruture/"]
 COPY ["Lente.Tests/Lente.Tests.csproj", "Lente.Tests/"]
 COPY ["Lente.Application/Lente.Application.csproj", "Lente.Application/"]
-COPY ["UsuarioDTO/Lente.DTOs.csproj", "UsuarioDTO/"]
+COPY ["Lente.DTOs/Lente.DTOs.csproj", "Lente.DTOs/"]
 RUN dotnet restore "./Software.lentes/Software.lentes.csproj"
 COPY . .
 WORKDIR "/src/Software.lentes"
